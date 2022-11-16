@@ -1,13 +1,13 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 
 public class Partido implements Comparable<Partido>{
-        private Integer votosLegenda;
-        private Integer votosNominais;
-        private String sigla;
-        private Integer num;
-        private List<Candidato> c = new ArrayList<Candidato>();
-        private Integer numCandidatosEleitos;
+        private Integer votosLegenda = 0;
+        private Integer votosNominais = 0;
+        private String sigla = "NENHUMA";
+        private Integer num = -1;
+        private HashSet<Candidato> c = new HashSet<Candidato>();
+        //private List<Candidato> c = new ArrayList<Candidato>();
+        private Integer numCandidatosEleitos=0;
         //Public
         public Partido(String sigla, Integer num){
                 votosLegenda = 0;
@@ -18,8 +18,8 @@ public class Partido implements Comparable<Partido>{
         }
         
         
-        public ArrayList<Candidato> getCandidatos(){
-                return new ArrayList<Candidato>(c);
+        public HashSet<Candidato> getCandidatos(){
+                return new HashSet<Candidato>(c);
         }
         
         //Ordenados por votos de legenda
@@ -38,7 +38,7 @@ public class Partido implements Comparable<Partido>{
 
         @Override
         public String toString(){
-                return   getSigla() + " - " + getNumPartido() + ", " +
+                return   getSigla().toUpperCase() + " - " + getNumPartido() + ", " +
                          getVotosTotal() + " votos (" + getVotosNominais() + " nominais e " + getVotosLegenda() + " de legenda), " + 
                          getNumCandidatosEleitos() + " candidatos eleitos";
         }
@@ -47,12 +47,14 @@ public class Partido implements Comparable<Partido>{
                 votosLegenda +=  a;
         }
 
-        //Restrição: usar somente quando candidato não estiver na lista do partido
+        
         public void addCandidato(Candidato a){
-                c.add(a);
-                votosNominais += a.getVotos();
-                if(a.eleito()){
-                        numCandidatosEleitos++;
+                if(c.contains(a) == false){
+                        c.add(a);
+                        votosNominais += a.getVotos();
+                        if(a.eleito() == true){
+                                numCandidatosEleitos++;
+                        }
                 }
         }
 

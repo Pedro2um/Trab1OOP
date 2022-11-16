@@ -1,42 +1,47 @@
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 
-public class Candidato {
+public class Candidato implements Comparable<Candidato>{
         
-
-        private Integer         CD_CARGO = -1;                       // 6 ou 7
-        private Boolean         CD_DETALHE_SITUACAO_CAND = false;       // candidatura deferida ou não
-        private Integer         NR_CANDIDATO = -1;
-        private String          NM_URNA_CANDIDATO = "NEGATIVO";
-        private Integer         NR_PARTIDO = -1;
-        private String          SG_PARTIDO = "NENHUMA";
-        private Integer         NR_FEDERACAO = -1;                   // -1 if partido isolado (não participa de federação)
-        private LocalDate       DT_NASCIMENTO;                  // data de nascimento do candidato no formato dd/mm/aaaa;
-        private Integer         CD_SIT_TOT_TURNO = -1;               //
-        private Integer         CD_GENERO =-1;                      //Masculino ou Feminino
-
-        private String          nome;                           //Nome verdadeiro
-        private Character       genero; 
+        private String          nome="";                           //Nome verdadeiro
+        private Character       genero='N';
+        private Character       cargo='N'; //F para federal e E para estadual
         private LocalDate       nascimento;  
         private Partido         partido;
-        private Integer         numero;
-        private Integer         votos;
-        private Boolean         eleito; 
+        private Integer         numero = -1;
+        private Integer         numero_federacao = -2;
+        private Integer         votos = 0;
+        private Boolean         eleito = false; 
 
-        public Candidato(String nome, Character genero, LocalDate nascimento, Partido partido, Integer numero, Integer votos, Boolean eleito){
+        public Candidato(Character cargo, String nome, Character genero, LocalDate nascimento, Partido partido, Integer numero, Integer numero_federacao, Integer votos, Boolean eleito){
+                this.cargo = cargo;
                 this.nome = nome;
                 this.genero = genero;
                 this.nascimento = nascimento;
                 this.partido = partido;
+                this.numero = numero;
+                this.numero_federacao = numero_federacao;
                 this.votos = votos;
                 this.eleito = eleito;
         }
 
+        //temporário, precisa colocar ponto nos números
         @Override
         public String toString(){
-                // Ex: Lula(PT, 60345999 votos)
-                //@TODO :falta resolver problema da pontuação no número
-                return nome + " (" + partido.getSigla() + ", " + votos + " votos)";  
+                return nome.toUpperCase() + " " + "(" + getPartido().getSigla().toUpperCase() + ", " + votos + " votos)"; 
+        }
+
+        //Ordenados por voto nominal
+        @Override
+        public int compareTo(Candidato b){
+                if(votos > b.getVotos()){
+                        return 1;
+                }
+                else if(votos < b.getVotos()){
+                        return -1;
+                }
+                else{
+                        return 0;
+                }
         }
 
         //Getters and Setters
@@ -53,8 +58,24 @@ public class Candidato {
                 return genero;
         }
 
+        public Character getCargo(){
+                return cargo;
+        }
+
         public Partido getPartido() {
                 return partido;
+        }
+
+        public Integer getNumero(){
+                return numero;
+        }
+
+        public Integer getNumeroFederacao(){
+                return numero_federacao;
+        }
+
+        public void setVotos(Integer votos){
+                if(this.votos == 0) this.votos = votos;
         }
         
         public Integer getVotos(){
