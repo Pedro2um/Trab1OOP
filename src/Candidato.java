@@ -88,6 +88,9 @@ public class Candidato implements Comparable<Candidato>{
         public Integer getVotos(){
                 return this.votos;
         }
+        public String getCandNumVoto(){
+                return nome.toUpperCase() + " (" + numero.toString() + ", " + votos + " votos)";
+        }
 
         public Boolean getFlagNominal(){
                 return this.flagNominal;

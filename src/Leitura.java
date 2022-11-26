@@ -55,7 +55,7 @@ public class Leitura {
                 return true;
         }
 
-        public void readCand(boolean federal, Map<Integer,Partido> part, Map<Integer,Candidato> cand, List<Candidato> candEleitos,String fcand, String enconding){
+        public void readCand(boolean federal, Map<Integer,Partido> part, List<Partido> partRanking, Map<Integer,Candidato> cand, List<Candidato> candEleitos,String fcand, String enconding){
                 FileInputStream c;
                         
                 BufferedReader inputc;
@@ -95,6 +95,7 @@ public class Leitura {
                                                   Integer.parseInt(row[NR_PARTIDO]) ) );
 
                                         partido = part.get( Integer.parseInt( row[NR_PARTIDO] ) );
+                                        partRanking.add(partido);
                                 }                                
 
                                 if( cd != FEDERAL && cd != ESTADUAL ){
@@ -151,7 +152,7 @@ public class Leitura {
                 return false;
         }
 
-        public void readVotos(boolean federal, Map<Integer, Partido> part, Map<Integer,Candidato> cand, String fvotos, String enconding){
+        public void readVotos(boolean federal, Map<Integer, Partido> part, List<Partido> partRanking,Map<Integer,Candidato> cand, String fvotos, String enconding){
                 FileInputStream v;
                 BufferedReader inputv;
                 //ler votos
@@ -184,7 +185,7 @@ public class Leitura {
                                 
                                 Integer votos = Integer.parseInt(row[QT_VOTOS]);
                                 
-                                
+                                        //candidato deferido E é a escolha (federal ou estadual) 
                                         if( cand.containsKey(num) == true ){
                                         
                                                 if( cand.get(num).getFlagNominal() == false ) {
@@ -193,7 +194,7 @@ public class Leitura {
                                                 else{
                                                         cand.get(num).incVotos(votos);
                                                 }
-                                                cand.get(num).getPartido().incVotosNominais(cand.get(num).getVotos()); // cuidado para nao contar votos duplamente
+                                                cand.get(num).getPartido().incVotosNominais(votos); // cuidado para nao contar votos duplamente
                                         }
                                         else if (part.containsKey(num) == true){
                                                         part.get(num).incVotosLegenda(votos);
@@ -201,6 +202,7 @@ public class Leitura {
                                         else if(num_part(num) == true){
                                                 Partido np = new Partido( row[NM_VOTAVEL], num);
                                                 part.put(num, np);
+                                                partRanking.add(np);
                                         }
                               
                                 

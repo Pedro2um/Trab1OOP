@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class Main{
         
@@ -22,8 +23,11 @@ public class Main{
         //static private List<Integer> idxBeneficiados = new ArrayList<>();
         static private List<Candidato> candBeneficiados = new ArrayList<>();
 
+        static private List<Partido> partRanking = new ArrayList<>();
 
-        private static void read_input(Map<Integer, Partido> part, Map<Integer,Candidato> cand, List<Candidato> candEleitos,String tipo, String fcand, String fvotos, String data){
+        static private Map<Partido,ArrayList<Candidato>> partCandHiLow = new HashMap<>();
+
+        private static void read_input(Map<Integer, Partido> part, List<Partido> partRanking, Map<Integer,Candidato> cand, List<Candidato> candEleitos,String tipo, String fcand, String fvotos, String data){
                 String enconding = "ISO-8859-1";
                 Leitura l = new Leitura();
 
@@ -32,12 +36,15 @@ public class Main{
                         f = true;
                 }
 
-                l.readCand(f, part, cand, candEleitos,fcand, enconding);
-                l.readVotos(f, part, cand, fvotos,enconding);
+                l.readCand(f, part, partRanking,cand, candEleitos,fcand, enconding);
+                l.readVotos(f, part, partRanking,cand, fvotos,enconding);
         }
 
         private static void solve(Map<Integer, Partido> part, Map<Integer,Candidato> cand){
-                candEleitos.sort((Candidato a, Candidato b)->  -1*Integer.valueOf(a.getVotos()).compareTo(b.getVotos()));
+                candEleitos.sort((Candidato a, Candidato b)->  (        -1*Integer.valueOf(a.getVotos()).compareTo(b.getVotos())==0?
+                                                                        -1*a.getNascimento().compareTo(b.getNascimento()): 
+                                                                        -1*Integer.valueOf(a.getVotos()).compareTo(b.getVotos())) 
+                );
                 candMaisVotados.addAll(cand.values());
                 candMaisVotados.sort((Candidato a, Candidato b)->  -1*Integer.valueOf(a.getVotos()).compareTo(b.getVotos()));
 
@@ -69,11 +76,34 @@ public class Main{
                                 candBeneficiados.add(x);
                         }
                 }
+
+                //relatorio 6
+                partRanking.sort((Partido a, Partido b)->       -1*Integer.valueOf(a.getVotosTotal()).compareTo(b.getVotosTotal()) == 0?
+                                                                   Integer.valueOf(a.getNumPartido()).compareTo(b.getNumPartido()):
+                                                                -1*Integer.valueOf(a.getVotosTotal()).compareTo(b.getVotosTotal())
+                );
+
+                //relatorio 8
+                //da pra otimizar, mas vou deixar para depois
+                for(var x: part.entrySet()){
+                        //apenas partido com algum candidato
+                        if(x.getValue().getVotosTotal() != 0) {
+                                ArrayList<Candidato> temp = x.getValue().getArrayListCandidatos();
+                                temp.sort((Candidato a, Candidato b) ->         -1*Integer.valueOf(a.getVotos()).compareTo(b.getVotos())==0?
+                                                                                -1*a.getNascimento().compareTo(b.getNascimento()): 
+                                                                                -1*Integer.valueOf(a.getVotos()).compareTo(b.getVotos()));
+                                ArrayList<Candidato> temp2 = new ArrayList<>();
+                                temp2.add(temp.get(0));//max
+                                temp2.add(temp.get(temp.size()-1));//min 
+                                partCandHiLow.put(x.getValue(), temp2);
+                        }
+                }
+
                 return;
         }
         
-
-        private static void write_output(String tipo, String data){
+       
+        private static void write_output(Map<Integer,Partido> part, String tipo, String data){
                 System.out.println("Número de vagas = " + candEleitos.size() + "\n");//relatorio 1
                 String dep = (tipo.compareTo(Federal))==0?"federais":"estaduais";
                 System.out.println("Deputados " + dep + " eleitos:");
@@ -116,75 +146,36 @@ public class Main{
                         System.out.println( m.get(x.getNumero()) + " - " +  (x.getNumeroFederacao() != -1? "*":"") + x); 
                 }
 
-                System.out.println("Votação dos partidos e número de candidatos eleitos:");
 
-                /*System.out.println("PARTIDOS:\n");
-
-                List<Partido> p = new ArrayList<>(part.values());
+                cnt = 1;
+                //relatorio 6
+                System.out.println("\nVotação dos partidos e número de candidatos eleitos:");
+                for(var x: partRanking){
+                        System.out.println(Integer.toString(cnt) + " - " + x);
+                        cnt++;
+                }
                 
-                Collections.sort(p, new Comparator<Partido>() {
-                        public int compare(Partido a, Partido b){
-                                //-1 for reverse order
-                                return ( -1 * Integer.valueOf(a.getNumCandidatosEleitos()).compareTo(b.getNumCandidatosEleitos()) );
-                        }
-                });
-
-                List<Candidato> c = new ArrayList<>(cand.values());
-                
-                Collections.sort(c, new Comparator<Candidato>() {
-                        public int compare(Candidato a, Candidato b){
-                                return Integer.valueOf(a.getVotos()).compareTo(b.getVotos());
-                        } 
-                });
-
-                
-
-                System.out.println("PARTIDOS - " + p.size() + "\n");
-                for(var x: p){
-                        System.out.println(x);
+                //relatorio 8
+                System.out.println("\nPrimeiro e último colocados de cada partido:"); 
+                cnt = 1;
+                for(var x: partCandHiLow.entrySet()){
+                        System.out.println(
+                                Integer.toString(cnt) + " - " + x.getKey().getSigla() + " - " + x.getKey().getNumPartido() 
+                                + " " + x.getValue().get(0).getCandNumVoto() + "/" + x.getValue().get(1).getCandNumVoto());
+                        cnt++;
                 }
 
-                System.out.println("CANDIDATOS - " + c.size() + "\n");
-                for(var y: c){
-                        System.out.println(y);
-                }
-                */
         }
 
+
+        
 
         public static void main(String[] args) throws Exception{  
                 Map<Integer,Partido> part = new HashMap<>(); //checar se o partido existe ou nao, a partir do numero
                 Map<Integer,Candidato> cand = new HashMap<>(); //precisamos atualizar os votos dos candidatos
-                read_input(part, cand, candEleitos, args[0], args[1], args[2], args[3]);
+                read_input(part, partRanking, cand, candEleitos, args[0], args[1], args[2], args[3]);
                 solve(part, cand);
-                write_output(args[0], args[3]);
+                write_output(part, args[0], args[3]);
         }
                 
 }
-
-      /*  Partido OzCria = new Partido("OzCria", 27);
-
-                LocalDate temp = LocalDate.of(2002, 12, 19);
-
-                Candidato ped = new Candidato("Pedro", 'M', temp, OzCria, 2791, 10000, true);
-
-                OzCria.addCandidato(ped);
-
-                temp = LocalDate.of(2001, 3, 12);
-                Candidato mar = new Candidato("Marlon", 'M', temp, OzCria, 2792, 20000, false);
-
-                OzCria.addCandidato(mar);
-
-                temp = LocalDate.of(2001, 4, 10);
-                Candidato mat = new Candidato("Matheus", 'M', temp, OzCria, 2793,30000, true);
-
-                OzCria.addCandidato(mat);
-
-                OzCria.incVotosLegenda(2000);
-                
-                System.out.println(OzCria);
-
-                for (var x : OzCria.getCandidatos()) {
-                        System.out.println(x + "\n");
-                }
-        */

@@ -1,6 +1,7 @@
 
+import java.util.ArrayList;
 import java.util.HashSet;
-
+import java.util.Set;
 
 
 public class Partido implements Comparable<Partido>{
@@ -8,7 +9,7 @@ public class Partido implements Comparable<Partido>{
         private Integer votosNominal = 0;
         private String sigla = "NENHUMA";
         private Integer num = -1;
-        private HashSet<Candidato> c = new HashSet<Candidato>();
+        private Set<Candidato> c = new HashSet<Candidato>();
         //private List<Candidato> c = new ArrayList<Candidato>();
         private Integer numCandidatosEleitos=0;
         //Public
@@ -18,10 +19,12 @@ public class Partido implements Comparable<Partido>{
         }
         
         
-        public HashSet<Candidato> getCandidatos(){
+        public HashSet<Candidato> getHashSetCandidatos(){
                 return new HashSet<Candidato>(c);
         }
-        
+        public ArrayList<Candidato> getArrayListCandidatos(){
+                return new ArrayList<Candidato>(c);
+        }
         //Ordenados por votos de legenda
         /*@Override
         public int compareTo(Partido b){
