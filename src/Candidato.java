@@ -1,3 +1,4 @@
+
 import java.time.LocalDate;
 
 public class Candidato implements Comparable<Candidato>{
@@ -8,11 +9,15 @@ public class Candidato implements Comparable<Candidato>{
         private LocalDate       nascimento;  
         private Partido         partido;
         private Integer         numero = -1;
-        private Integer         numero_federacao = -2;
+        private Integer         numero_federacao = -1;
         private Integer         votos = 0;
         private Boolean         eleito = false; 
+        private Boolean         flagNominal = false; //se falso , então votos direcionados para o partido
 
-        public Candidato(Character cargo, String nome, Character genero, LocalDate nascimento, Partido partido, Integer numero, Integer numero_federacao, Integer votos, Boolean eleito){
+        public Candidato(Character cargo, String nome, Character genero, 
+                        LocalDate nascimento, Partido partido, Integer numero, 
+                        Integer numero_federacao, Integer votos, Boolean nominal, 
+                        Boolean eleito){
                 this.cargo = cargo;
                 this.nome = nome;
                 this.genero = genero;
@@ -21,6 +26,7 @@ public class Candidato implements Comparable<Candidato>{
                 this.numero = numero;
                 this.numero_federacao = numero_federacao;
                 this.votos = votos;
+                this.flagNominal = nominal;
                 this.eleito = eleito;
         }
 
@@ -51,38 +57,43 @@ public class Candidato implements Comparable<Candidato>{
         }  
 
         public String getNome() {
-                return nome;
+                return this.nome;
         }
 
         public Character getGenero(){
-                return genero;
+                return this.genero;
         }
 
         public Character getCargo(){
-                return cargo;
+                return this.cargo;
         }
 
         public Partido getPartido() {
-                return partido;
+                return this.partido;
         }
 
         public Integer getNumero(){
-                return numero;
+                return this.numero;
         }
 
         public Integer getNumeroFederacao(){
-                return numero_federacao;
+                return this.numero_federacao;
         }
 
-        public void setVotos(Integer votos){
-                if(this.votos == 0) this.votos = votos;
+        public void incVotos(Integer v){
+                this.votos += v;
         }
-        
+
+
         public Integer getVotos(){
-                return votos;
+                return this.votos;
+        }
+
+        public Boolean getFlagNominal(){
+                return this.flagNominal;
         }
 
         public Boolean eleito(){
-                return eleito;
+                return this.eleito;
         }
 }

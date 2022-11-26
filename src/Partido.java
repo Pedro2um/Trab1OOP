@@ -1,8 +1,11 @@
+
 import java.util.HashSet;
+
+
 
 public class Partido implements Comparable<Partido>{
         private Integer votosLegenda = 0;
-        private Integer votosNominais = 0;
+        private Integer votosNominal = 0;
         private String sigla = "NENHUMA";
         private Integer num = -1;
         private HashSet<Candidato> c = new HashSet<Candidato>();
@@ -10,11 +13,8 @@ public class Partido implements Comparable<Partido>{
         private Integer numCandidatosEleitos=0;
         //Public
         public Partido(String sigla, Integer num){
-                votosLegenda = 0;
-                votosNominais = 0;
                 this.sigla = sigla;
                 this.num = num;
-                numCandidatosEleitos = 0;
         }
         
         
@@ -23,7 +23,7 @@ public class Partido implements Comparable<Partido>{
         }
         
         //Ordenados por votos de legenda
-        @Override
+        /*@Override
         public int compareTo(Partido b){
                 if(votosLegenda > b.getVotosLegenda()){
                         return 1;
@@ -34,53 +34,70 @@ public class Partido implements Comparable<Partido>{
                 else{
                         return 0;
                 }
+        }*/
+
+        @Override
+        public int compareTo(Partido b){
+                if(this.getNumPartido() > b.getNumPartido()){
+                        return 1;
+                }
+                else if(this.getNumPartido() < b.getNumPartido()){
+                        return -1;
+                }
+                else{
+                        return 0;
+                }
         }
 
         @Override
         public String toString(){
                 return   getSigla().toUpperCase() + " - " + getNumPartido() + ", " +
-                         getVotosTotal() + " votos (" + getVotosNominais() + " nominais e " + getVotosLegenda() + " de legenda), " + 
+                         getVotosTotal() + " votos (" + getVotosNominal() + " nominais e " + getVotosLegenda() + " de legenda), " + 
                          getNumCandidatosEleitos() + " candidatos eleitos";
         }
 
         public void incVotosLegenda(Integer a){
-                votosLegenda +=  a;
+                this.votosLegenda +=  a;
         }
 
+        public void incVotosNominais(Integer a){
+                this.votosNominal +=  a;
+        }
         
         public void addCandidato(Candidato a){
                 if(c.contains(a) == false){
                         c.add(a);
-                        votosNominais += a.getVotos();
+                        this.votosNominal += a.getVotos(); //por conta da forma que fazemos a leitura dos candidatos, sempre será um incremento de 0
                         if(a.eleito() == true){
-                                numCandidatosEleitos++;
+                                this.numCandidatosEleitos++;
                         }
                 }
         }
 
         //Getters
         public Integer getVotosLegenda(){
-                return votosLegenda;
+                return this.votosLegenda;
         }
 
-        public Integer getVotosNominais(){
-                return votosNominais;
+        public Integer getVotosNominal(){
+                return this.votosNominal;
         }
 
         public Integer getVotosTotal(){
-                return getVotosLegenda() + getVotosNominais();
+                return getVotosLegenda() + getVotosNominal();
         }
 
         public Integer getNumPartido(){
-                return num;
+                return this.num;
         }
 
         public Integer getNumCandidatosEleitos(){
-                return numCandidatosEleitos;
+                return this.numCandidatosEleitos;
         }
 
         public String getSigla(){
-                return sigla;
+                return this.sigla;
         }
         
 }
+
