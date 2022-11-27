@@ -49,8 +49,8 @@ public class Eleicao {
                 localDate = LocalDate.parse(data,formatter);
         } 
 
-        public void readInput(  Map<Integer, Partido> part, Map<Integer,Candidato> cand,  String tipo, String fcand, String fvotos, String data){
-                String enconding = "ISO-8859-1";
+        public void readInput( String enconding, Map<Integer, Partido> part, Map<Integer,Candidato> cand,  String tipo, String fcand, String fvotos, String data){
+                
                 Leitura l = new Leitura();
 
                 boolean f = false;
