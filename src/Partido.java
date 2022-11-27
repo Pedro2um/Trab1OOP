@@ -1,6 +1,8 @@
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 
@@ -13,6 +15,7 @@ public class Partido implements Comparable<Partido>{
         private Integer qtdCandidatos = 0;
         //private List<Candidato> c = new ArrayList<Candidato>();
         private Integer numCandidatosEleitos=0;
+        static private final Locale lBR = new Locale("pt", "BR");
         //Public
         public Partido(String sigla, Integer num){
                 this.sigla = sigla;
@@ -55,8 +58,11 @@ public class Partido implements Comparable<Partido>{
 
         @Override
         public String toString(){
+                String total = NumberFormat.getIntegerInstance(lBR).format(getVotosTotal());
+                String nominal = NumberFormat.getIntegerInstance(lBR).format(getVotosNominal());
+                String legenda = NumberFormat.getIntegerInstance(lBR).format(getVotosLegenda());
                 return   getSigla().toUpperCase() + " - " + getNumPartido() + ", " +
-                         getVotosTotal() + " votos (" + getVotosNominal() + " nominais e " + getVotosLegenda() + " de legenda), " + 
+                         total + " votos (" + nominal + " nominais e " + legenda + " de legenda), " + 
                          getNumCandidatosEleitos() + " candidatos eleitos";
         }
 

@@ -1,4 +1,5 @@
 
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
@@ -8,6 +9,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.PropertyResourceBundle;
 import java.util.Set;
@@ -43,7 +45,9 @@ public class Main{
         static private int[] gen = new int[SIZE_GEN];
         static private int votosValidosTotal = 0;
         static private int votosNominaisTotal = 0;
-        static private int votosLegendaTotal = 0; 
+        static private int votosLegendaTotal = 0;
+        static final Locale localeBR = new Locale("pt", "BR");
+        
 
         // 0 -> < 30
         // 1 -> >= 30 e < 40
@@ -204,6 +208,7 @@ public class Main{
         }
 
         private static void write_output(Map<Integer,Partido> part, String tipo, String data){
+
                 System.out.println("Número de vagas = " + candEleitos.size() + "\n");//relatorio 1
                 String dep = (tipo.compareTo(Federal))==0?"federais":"estaduais";
                 System.out.println("Deputados " + dep + " eleitos:");
@@ -266,7 +271,6 @@ public class Main{
                 }
 
                 //relatorio 9
-                //TODO: mudar para sout
                 System.out.println("\nEleitos, por faixa etária (na data da eleição):");
                 System.out.printf("%s %d (%.2f%%)\n", "      Idade < 30:", qtd[B30], proporcao(qtd[B30], qtdTotal));
                 System.out.printf("%s %d (%.2f%%)\n", "30 <= Idade < 40:", qtd[B40], proporcao(qtd[B40], qtdTotal));
@@ -275,16 +279,26 @@ public class Main{
                 System.out.printf("%s %d (%.2f%%)\n", "60 <= Idade     :", qtd[U60], proporcao(qtd[U60], qtdTotal));
                 
                 //relatorio 10
-                //TODO: mudar para sout
                 System.out.println("\nEleitos, por gênero:");
-                System.out.printf("%s: %d (%.2f%%)\n", "Feminino", gen[FEM], proporcao(gen[FEM], qtdTotal));
+                System.out.printf("%s: %d (%.2f%%)\n", "Feminino ", gen[FEM], proporcao(gen[FEM], qtdTotal));
                 System.out.printf("%s: %d (%.2f%%)\n", "Masculino", gen[MAS], proporcao(gen[MAS], qtdTotal));
 
                 //relatorio 11
                 //TODO: mudar formatt
-                System.out.println("Total de votos válidos: " + Integer.toString(votosValidosTotal));
-                System.out.println("Total de votos nominais: " + Integer.toString(votosNominaisTotal) + " " + Double.toString(proporcao(votosNominaisTotal, votosValidosTotal)));
-                System.out.println("Total de votos de legenda: " + Integer.toString(votosLegendaTotal) + " " + Double.toString(proporcao(votosLegendaTotal, votosValidosTotal)));
+                NumberFormat aFormat = NumberFormat.getInstance(localeBR);
+                NumberFormat bFormat = NumberFormat.getInstance(localeBR);
+                bFormat.setMaximumFractionDigits(0);
+                aFormat.setMaximumFractionDigits(2);
+                aFormat.setMinimumFractionDigits(2);
+                System.out.println("Total de votos válidos:    " + bFormat.format(votosValidosTotal) );
+                System.out.println("Total de votos nominais:   " 
+                                        + bFormat.format(votosNominaisTotal) + " (" 
+                                        + aFormat.format(proporcaoDouble(votosNominaisTotal, votosValidosTotal)) + "%)");
+                
+                
+                System.out.println("Total de votos de legenda: " 
+                                        + bFormat.format(votosLegendaTotal) + " (" 
+                                        + aFormat.format( proporcaoDouble(votosLegendaTotal, votosValidosTotal) ) + "%)");
         }
 
 
@@ -293,6 +307,10 @@ public class Main{
         private static float proporcao(int x, int t) {
                 double ans = (double)x / (double)t; 
                 return (float)(ans*100);
+        }
+        private static double proporcaoDouble(int x, int t){
+                double ans = (double)x / (double)t; 
+                return (ans*100);
         }
 
         public static void main(String[] args) throws Exception{  

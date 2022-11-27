@@ -1,5 +1,7 @@
 
+import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.util.Locale;
 
 public class Candidato implements Comparable<Candidato>{
         
@@ -13,6 +15,7 @@ public class Candidato implements Comparable<Candidato>{
         private Integer         votos = 0;
         private Boolean         eleito = false; 
         private Boolean         flagNominal = false; //se falso , então votos direcionados para o partido
+        static private final Locale lBR = new Locale("pt", "BR");
 
         public Candidato(Character cargo, String nome, Character genero, 
                         LocalDate nascimento, Partido partido, Integer numero, 
@@ -33,7 +36,8 @@ public class Candidato implements Comparable<Candidato>{
         //temporário, precisa colocar ponto nos números
         @Override
         public String toString(){
-                return nome.toUpperCase() + " " + "(" + getPartido().getSigla().toUpperCase() + ", " + votos + " votos)"; 
+                String s = NumberFormat.getIntegerInstance(lBR).format(votos);
+                return nome.toUpperCase() + " " + "(" + getPartido().getSigla().toUpperCase() + ", " + s + " votos)"; 
         }
 
         //Ordenados por voto nominal
@@ -92,7 +96,8 @@ public class Candidato implements Comparable<Candidato>{
                 return this.votos;
         }
         public String getCandNumVoto(){
-                return nome.toUpperCase() + " (" + numero.toString() + ", " + votos + " votos)";
+                String s = NumberFormat.getIntegerInstance(lBR).format(votos);
+                return nome.toUpperCase() + " (" + numero.toString() + ", " + s + " votos)";
         }
 
         public Boolean getFlagNominal(){
