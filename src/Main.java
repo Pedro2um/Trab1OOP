@@ -1,4 +1,7 @@
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -6,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.PropertyResourceBundle;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -30,8 +34,22 @@ public class Main{
 
         static private Map<Partido,ArrayList<Candidato>> partCandHiLow = new TreeMap<>();
         static protected Map< Partido, ArrayList<Candidato>> partCHL = new HashMap<>();
-       
+        static public final int B30 = 0, B40 = 1, B50 = 2, B60 = 3, U60 = 4;
+        static final int SIZE = 5;
+        static private int[] qtd = new int[SIZE];
+        static private int qtdTotal = 0;
+        static public final int MAS = 0, FEM = 1;
+        static final int SIZE_GEN = 2;
+        static private int[] gen = new int[SIZE_GEN];
+        static private int votosValidosTotal = 0;
+        static private int votosNominaisTotal = 0;
+        static private int votosLegendaTotal = 0; 
 
+        // 0 -> < 30
+        // 1 -> >= 30 e < 40
+        // 2 -> >= 40 e < 50
+        // 3 -> >= 50 e < 60
+        // 4 -> >= 60
         private static void read_input(Map<Integer, Partido> part, List<Partido> partRanking, Map<Integer,Candidato> cand, List<Candidato> candEleitos,String tipo, String fcand, String fvotos, String data){
                 String enconding = "ISO-8859-1";
                 Leitura l = new Leitura();
@@ -45,7 +63,7 @@ public class Main{
                 l.readVotos(f, part, partRanking,cand, fvotos,enconding);
         }
 
-        private static void solve(Map<Integer, Partido> part, Map<Integer,Candidato> cand){
+        private static void solve(Map<Integer, Partido> part, Map<Integer,Candidato> cand, String data){
                 candEleitos.sort((Candidato a, Candidato b)->  (        -1*Integer.valueOf(a.getVotos()).compareTo(b.getVotos())==0?
                                                                         -1*a.getNascimento().compareTo(b.getNascimento()): 
                                                                         -1*Integer.valueOf(a.getVotos()).compareTo(b.getVotos())) 
@@ -88,8 +106,8 @@ public class Main{
                                                                 -1*Integer.valueOf(a.getVotosTotal()).compareTo(b.getVotosTotal())
                 );
 
-                //relatorio 8
-                //da pra otimizar, mas vou deixar para depois
+                //relatorio 8 e 11
+                //da pra otimizar?, mas vou deixar para depois
                 
                 for(var x: part.entrySet()){
                         //apenas partido com algum candidato
@@ -104,6 +122,9 @@ public class Main{
                                 partCHL.put(x.getValue(), temp2);
                                 
                         }
+                        votosValidosTotal += x.getValue().getVotosTotal();
+                        votosNominaisTotal += x.getValue().getVotosNominal();
+                        votosLegendaTotal += x.getValue().getVotosLegenda();
                 }
 
                 partCandHiLow = new TreeMap<Partido, ArrayList<Candidato>>(
@@ -134,14 +155,56 @@ public class Main{
                         }
                 );
 
-                partCandHiLow.putAll(partCHL);
+                partCandHiLow.putAll(partCHL);  
                 
+                //relatorio 9 e 10
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
+                LocalDate ld = LocalDate.parse(data, formatter);
 
+                for(int i = 0; i < SIZE; i++){
+                        qtd[i] = 0;
+                }
+                for(int i = 0; i < SIZE_GEN; i++){
+                        gen[i] = 0;
+                }
+
+                for(var x: candEleitos){
+                        long i = getIdade(ld, x.getNascimento());
+                        if( i < 30){
+                                qtd[B30]++;
+                        }
+                        else if( i < 40){
+                                qtd[B40]++;
+                        }
+                        else if( i < 50){
+                                qtd[B50]++;
+                        }
+                        else if( i < 60){
+                                qtd[B60]++;
+                        }
+                        else {
+                                qtd[U60]++;
+                        }
+                        
+                        if(x.getGenero().compareTo('M') == 0){
+                                gen[MAS]++;
+                                System.out.println(x.getGenero());
+                        }
+                        else if(x.getGenero().compareTo('F') == 0){
+                                gen[FEM]++;
+                                System.out.println(x.getGenero());
+                        }
+                } 
+                qtdTotal = candEleitos.size();
                 return;
         }
         
         
        
+        private static int getIdade(LocalDate ld, LocalDate n) {
+                return Period.between(n, ld).getYears();  
+        }
+
         private static void write_output(Map<Integer,Partido> part, String tipo, String data){
                 System.out.println("Número de vagas = " + candEleitos.size() + "\n");//relatorio 1
                 String dep = (tipo.compareTo(Federal))==0?"federais":"estaduais";
@@ -204,16 +267,41 @@ public class Main{
                         cnt++;
                 }
 
+                //relatorio 9
+                //TODO: mudar para sout
+                System.out.println("\nEleitos, por faixa etária (na data da eleição):");
+                System.out.printf("%s %d (%.2f%%)\n", "      Idade < 30:", qtd[B30], proporcao(qtd[B30], qtdTotal));
+                System.out.printf("%s %d (%.2f%%)\n", "30 <= Idade < 40:", qtd[B40], proporcao(qtd[B40], qtdTotal));
+                System.out.printf("%s %d (%.2f%%)\n", "40 <= Idade < 50:", qtd[B50], proporcao(qtd[B50], qtdTotal));
+                System.out.printf("%s %d (%.2f%%)\n", "50 <= Idade < 60:", qtd[B60], proporcao(qtd[B60], qtdTotal));
+                System.out.printf("%s %d (%.2f%%)\n", "60 <= Idade     :", qtd[U60], proporcao(qtd[U60], qtdTotal));
+                
+                //relatorio 10
+                //TODO: mudar para sout
+                System.out.println("\nEleitos, por gênero:");
+                System.out.printf("%s: %d (%.2f%%)\n", "Feminino", gen[FEM], proporcao(gen[FEM], qtdTotal));
+                System.out.printf("%s: %d (%.2f%%)\n", "Masculino", gen[MAS], proporcao(gen[MAS], qtdTotal));
+
+                //relatorio 11
+                //TODO: mudar formatt
+                System.out.println("Total de votos válidos: " + Integer.toString(votosValidosTotal));
+                System.out.println("Total de votos nominais: " + Integer.toString(votosNominaisTotal) + " " + Double.toString(proporcao(votosNominaisTotal, votosValidosTotal)));
+                System.out.println("Total de votos de legenda: " + Integer.toString(votosLegendaTotal) + " " + Double.toString(proporcao(votosLegendaTotal, votosValidosTotal)));
         }
 
 
         
 
+        private static float proporcao(int x, int t) {
+                double ans = (double)x / (double)t; 
+                return (float)(ans*100);
+        }
+
         public static void main(String[] args) throws Exception{  
                 Map<Integer,Partido> part = new HashMap<>(); //checar se o partido existe ou nao, a partir do numero
                 Map<Integer,Candidato> cand = new HashMap<>(); //precisamos atualizar os votos dos candidatos
                 read_input(part, partRanking, cand, candEleitos, args[0], args[1], args[2], args[3]);
-                solve(part, cand);
+                solve(part, cand, args[3]);
                 write_output(part, args[0], args[3]);
         }
                 

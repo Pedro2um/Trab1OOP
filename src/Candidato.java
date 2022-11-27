@@ -60,6 +60,9 @@ public class Candidato implements Comparable<Candidato>{
                 return this.nome;
         }
 
+        /*
+          M -> MASCULINO e F -> FEMININO
+        */
         public Character getGenero(){
                 return this.genero;
         }

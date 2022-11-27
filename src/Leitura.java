@@ -113,7 +113,7 @@ public class Leitura {
 
                                 //Informacoes do candidato atual
                                 String nome = row[NM_URNA_CANDIDATO];
-                                Character genero = (row[CD_GENERO] == MASCULINO ? 'M':'F');
+                                Character genero = (row[CD_GENERO].compareTo(MASCULINO) == 0 ? 'M':'F');
                                 LocalDate nascimento = LocalDate.parse(row[DT_NASCIMENTO], formatter);
                                 
                                 Integer numero = Integer.parseInt(row[NR_CANDIDATO]);
