@@ -188,11 +188,9 @@ public class Main{
                         
                         if(x.getGenero().compareTo('M') == 0){
                                 gen[MAS]++;
-                                System.out.println(x.getGenero());
                         }
                         else if(x.getGenero().compareTo('F') == 0){
-                                gen[FEM]++;
-                                System.out.println(x.getGenero());
+                                gen[FEM]++;    
                         }
                 } 
                 qtdTotal = candEleitos.size();
