@@ -10,6 +10,7 @@ public class Partido implements Comparable<Partido>{
         private String sigla = "NENHUMA";
         private Integer num = -1;
         private Set<Candidato> c = new HashSet<Candidato>();
+        private Integer qtdCandidatos = 0;
         //private List<Candidato> c = new ArrayList<Candidato>();
         private Integer numCandidatosEleitos=0;
         //Public
@@ -69,6 +70,7 @@ public class Partido implements Comparable<Partido>{
         
         public void addCandidato(Candidato a){
                 if(c.contains(a) == false){
+                        qtdCandidatos++;
                         c.add(a);
                         this.votosNominal += a.getVotos(); //por conta da forma que fazemos a leitura dos candidatos, sempre será um incremento de 0
                         if(a.eleito() == true){
@@ -88,6 +90,10 @@ public class Partido implements Comparable<Partido>{
 
         public Integer getVotosTotal(){
                 return getVotosLegenda() + getVotosNominal();
+        }
+
+        public Integer getQtdCandidatos(){
+                return qtdCandidatos;
         }
 
         public Integer getNumPartido(){

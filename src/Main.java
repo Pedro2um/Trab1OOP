@@ -111,7 +111,7 @@ public class Main{
                 
                 for(var x: part.entrySet()){
                         //apenas partido com algum candidato
-                        if(x.getValue().getVotosTotal() != 0) {
+                        if(x.getValue().getQtdCandidatos() > 0) {
                                 ArrayList<Candidato> temp = x.getValue().getArrayListCandidatos();
                                 temp.sort((Candidato a, Candidato b) ->         -1*Integer.valueOf(a.getVotos()).compareTo(b.getVotos())==0?
                                                                                 -1*a.getNascimento().compareTo(b.getNascimento()): 
