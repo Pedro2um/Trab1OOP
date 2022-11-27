@@ -1,11 +1,14 @@
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.TreeMap;
+
 
 public class Main{
         
@@ -25,7 +28,9 @@ public class Main{
 
         static private List<Partido> partRanking = new ArrayList<>();
 
-        static private Map<Partido,ArrayList<Candidato>> partCandHiLow = new HashMap<>();
+        static private Map<Partido,ArrayList<Candidato>> partCandHiLow = new TreeMap<>();
+        static protected Map< Partido, ArrayList<Candidato>> partCHL = new HashMap<>();
+       
 
         private static void read_input(Map<Integer, Partido> part, List<Partido> partRanking, Map<Integer,Candidato> cand, List<Candidato> candEleitos,String tipo, String fcand, String fvotos, String data){
                 String enconding = "ISO-8859-1";
@@ -85,6 +90,7 @@ public class Main{
 
                 //relatorio 8
                 //da pra otimizar, mas vou deixar para depois
+                
                 for(var x: part.entrySet()){
                         //apenas partido com algum candidato
                         if(x.getValue().getVotosTotal() != 0) {
@@ -95,12 +101,45 @@ public class Main{
                                 ArrayList<Candidato> temp2 = new ArrayList<>();
                                 temp2.add(temp.get(0));//max
                                 temp2.add(temp.get(temp.size()-1));//min 
-                                partCandHiLow.put(x.getValue(), temp2);
+                                partCHL.put(x.getValue(), temp2);
+                                
                         }
                 }
 
+                partCandHiLow = new TreeMap<Partido, ArrayList<Candidato>>(
+                        new Comparator<Partido>() {
+                                @Override
+                                public int compare(Partido a, Partido b){
+                                        long x = partCHL.get(a).get(0).getVotos();
+                                        long y = partCHL.get(b).get(0).getVotos();
+                                        if( x < y ){
+                                                return 1;
+                                        }
+                                        else if( x > y){
+                                                return -1;
+                                        }
+                                        else {
+                                                if( a.getNumPartido() < b.getNumPartido() ) {
+                                                        return 1;
+                                                }
+                                                else if( a.getNumPartido() > b.getNumPartido()){
+                                                        return -1;
+                                                }
+                                                else {
+                                                        return 0;
+                                                }
+                                                
+                                        }
+                                }
+                        }
+                );
+
+                partCandHiLow.putAll(partCHL);
+                
+
                 return;
         }
+        
         
        
         private static void write_output(Map<Integer,Partido> part, String tipo, String data){
@@ -161,7 +200,7 @@ public class Main{
                 for(var x: partCandHiLow.entrySet()){
                         System.out.println(
                                 Integer.toString(cnt) + " - " + x.getKey().getSigla() + " - " + x.getKey().getNumPartido() 
-                                + " " + x.getValue().get(0).getCandNumVoto() + "/" + x.getValue().get(1).getCandNumVoto());
+                                + " " + x.getValue().get(0).getCandNumVoto() + " / " + x.getValue().get(1).getCandNumVoto());
                         cnt++;
                 }
 
