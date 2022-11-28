@@ -27,7 +27,13 @@ public class Partido implements Comparable<Partido>{
                 return new HashSet<Candidato>(c);
         }
         public ArrayList<Candidato> getArrayListCandidatos(){
-                return new ArrayList<Candidato>(c);
+                ArrayList<Candidato> n = new ArrayList<>();
+                for(var x: c){
+                        if(x.getFlagNominal() != Candidato.OUTRO){
+                                n.add(x);
+                        }
+                }
+                return n;
         }
         //Ordenados por votos de legenda
         /*@Override
@@ -61,9 +67,9 @@ public class Partido implements Comparable<Partido>{
                 String total = NumberFormat.getIntegerInstance(lBR).format(getVotosTotal());
                 String nominal = NumberFormat.getIntegerInstance(lBR).format(getVotosNominal());
                 String legenda = NumberFormat.getIntegerInstance(lBR).format(getVotosLegenda());
-                return   getSigla().toUpperCase() + " - " + getNumPartido() + ", " +
-                         total + " votos (" + nominal + " nominais e " + legenda + " de legenda), " + 
-                         getNumCandidatosEleitos() + " candidatos eleitos";
+                return   getSigla() + " - " + getNumPartido() + ", " +
+                         total + " voto"+ (getVotosTotal()>1?"s":"") + " (" + nominal + " nomina" +(getVotosNominal() <= 1?"l":"is") + " e " + legenda + " de legenda), " + 
+                         getNumCandidatosEleitos() + " candidato" + (getNumCandidatosEleitos()>1?"s":"")  + " eleito" + (getNumCandidatosEleitos() > 1?"s":"");
         }
 
         public void incVotosLegenda(Integer a){
@@ -78,7 +84,6 @@ public class Partido implements Comparable<Partido>{
                 if(c.contains(a) == false){
                         qtdCandidatos++;
                         c.add(a);
-                        this.votosNominal += a.getVotos(); //por conta da forma que fazemos a leitura dos candidatos, sempre será um incremento de 0
                         if(a.eleito() == true){
                                 this.numCandidatosEleitos++;
                         }

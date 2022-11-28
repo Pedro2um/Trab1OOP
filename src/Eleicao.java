@@ -86,7 +86,7 @@ public class Eleicao {
                 solve4(candMaisVotadosTemp, candEleitosTemp);
                 solve5();
                 solve6();
-                solve8and11(part);
+                solve8and11(part, data);
                 solve9and10(data);
         }
 
@@ -95,7 +95,7 @@ public class Eleicao {
         }
         private void solve2(){
                 candEleitos.sort((Candidato a, Candidato b)->  (        -1*Integer.valueOf(a.getVotos()).compareTo(b.getVotos())==0?
-                                                                        -1*a.getNascimento().compareTo(b.getNascimento()): 
+                                                                        -1*cmpIdade(localDate, a.getNascimento(), b.getNascimento()): 
                                                                         -1*Integer.valueOf(a.getVotos()).compareTo(b.getVotos())) 
                 );
         }
@@ -154,15 +154,32 @@ public class Eleicao {
         private void solve11(){
                 return;
         }
+
+        private int cmpIdade(LocalDate r, LocalDate a, LocalDate b){
+                int ia = getIdade(r, a);
+                int ib = getIdade(r, b);
+                if(ia > ib) {
+                        return 1;
+                }
+                else if(ia < ib){
+                        return -1;
+                }
+                else{
+                        return 0;
+                }
+        }
+
         //otimizacoes
-        private void solve8and11(Map<Integer, Partido> part){    
+        private void solve8and11(Map<Integer, Partido> part, String data){    
+               // LocalDate d = LocalDate.
                 for(var x: part.entrySet()){
                         //apenas partido com algum candidato
                         if(x.getValue().getQtdCandidatos() > 0) {
                                 ArrayList<Candidato> temp = x.getValue().getArrayListCandidatos();
                                 temp.sort((Candidato a, Candidato b) ->         -1*Integer.valueOf(a.getVotos()).compareTo(b.getVotos())==0?
-                                                                                -1*a.getNascimento().compareTo(b.getNascimento()): 
+                                                                                -1*cmpIdade(localDate, a.getNascimento(), b.getNascimento()): 
                                                                                 -1*Integer.valueOf(a.getVotos()).compareTo(b.getVotos()));
+
                                 ArrayList<Candidato> temp2 = new ArrayList<>();
                                 temp2.add(temp.get(0));//max
                                 temp2.add(temp.get(temp.size()-1));//min 
@@ -248,7 +265,7 @@ public class Eleicao {
         //Exibir Relatorios
         
         private void relatorio1(){
-                System.out.println("Número de vagas = " + candEleitos.size() + "\n");
+                System.out.println("Número de vagas: " + candEleitos.size() + "\n");
         } 
         private void relatorio2(String tipo){
                 String dep = (tipo.compareTo(Federal))==0?"federais":"estaduais";
@@ -301,22 +318,37 @@ public class Eleicao {
                 for(var x: partCandHiLow.entrySet()){
                         System.out.println(
                                 Integer.toString(cnt) + " - " + x.getKey().getSigla() + " - " + x.getKey().getNumPartido() 
-                                + " " + x.getValue().get(0).getCandNumVoto() + " / " + x.getValue().get(1).getCandNumVoto());
+                                + ", " + x.getValue().get(0).getCandNumVoto() + " / " + x.getValue().get(1).getCandNumVoto());
                         cnt++;
                 }
         }
         private void relatorio9(){
+
+                NumberFormat aFormat = NumberFormat.getInstance(locale);
+                NumberFormat bFormat = NumberFormat.getInstance(locale);
+                bFormat.setMaximumFractionDigits(0);
+                aFormat.setMaximumFractionDigits(2);
+                aFormat.setMinimumFractionDigits(2);
+
                 System.out.println("\nEleitos, por faixa etária (na data da eleição):");
-                System.out.printf("%s %d (%.2f%%)\n", "      Idade < 30:", qtd[B30], proporcao(qtd[B30], qtdTotal));
-                System.out.printf("%s %d (%.2f%%)\n", "30 <= Idade < 40:", qtd[B40], proporcao(qtd[B40], qtdTotal));
-                System.out.printf("%s %d (%.2f%%)\n", "40 <= Idade < 50:", qtd[B50], proporcao(qtd[B50], qtdTotal));
-                System.out.printf("%s %d (%.2f%%)\n", "50 <= Idade < 60:", qtd[B60], proporcao(qtd[B60], qtdTotal));
-                System.out.printf("%s %d (%.2f%%)\n", "60 <= Idade     :", qtd[U60], proporcao(qtd[U60], qtdTotal));
+
+                System.out.println("      Idade < 30: " + qtd[B30] + " (" + aFormat.format(proporcao(qtd[B30], qtdTotal)) + "%)");
+                System.out.println("30 <= Idade < 40: " + qtd[B40] + " (" + aFormat.format(proporcao(qtd[B40], qtdTotal)) + "%)");
+                System.out.println("40 <= Idade < 50: " + qtd[B50] + " (" + aFormat.format(proporcao(qtd[B50], qtdTotal)) + "%)");
+                System.out.println("50 <= Idade < 60: " + qtd[B60] + " (" + aFormat.format(proporcao(qtd[B60], qtdTotal)) + "%)");
+                System.out.println("60 <= Idade     : " + qtd[U60] + " (" + aFormat.format(proporcao(qtd[U60], qtdTotal)) + "%)");
         }
         private void relatorio10(){
+
+                NumberFormat aFormat = NumberFormat.getInstance(locale);
+                NumberFormat bFormat = NumberFormat.getInstance(locale);
+                bFormat.setMaximumFractionDigits(0);
+                aFormat.setMaximumFractionDigits(2);
+                aFormat.setMinimumFractionDigits(2);
+
                 System.out.println("\nEleitos, por gênero:");
-                System.out.printf("%s: %d (%.2f%%)\n", "Feminino ", gen[FEM], proporcao(gen[FEM], qtdTotal));
-                System.out.printf("%s: %d (%.2f%%)\n", "Masculino", gen[MAS], proporcao(gen[MAS], qtdTotal));
+                System.out.println("Feminino:  " + gen[FEM] + " (" + aFormat.format(proporcao(gen[FEM], qtdTotal)) + "%)");
+                System.out.println("Masculino: " + gen[MAS] + " (" + aFormat.format(proporcao(gen[MAS], qtdTotal)) + "%)");
         }
         private void relatorio11(){
                  //relatorio 11
@@ -333,7 +365,7 @@ public class Eleicao {
                 
                 System.out.println("Total de votos de legenda: " 
                                         + bFormat.format(votosLegendaTotal) + " (" 
-                                        + aFormat.format( proporcaoDouble(votosLegendaTotal, votosValidosTotal) ) + "%)");
+                                        + aFormat.format( proporcaoDouble(votosLegendaTotal, votosValidosTotal) ) + "%)\n");
         }
         
         //funcoes auxiliares

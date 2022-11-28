@@ -14,12 +14,15 @@ public class Candidato implements Comparable<Candidato>{
         private Integer         numero_federacao = -1;
         private Integer         votos = 0;
         private Boolean         eleito = false; 
-        private Boolean         flagNominal = false; //se falso , então votos direcionados para o partido
+        static public int       VALIDO = 1;
+        static public int       VALIDO_LEGENDA = 2;
+        static public int       OUTRO = -1;
+        private Integer         flagNominal = -1; //se falso , então votos direcionados para o partido
         static private final Locale lBR = new Locale("pt", "BR");
 
         public Candidato(Character cargo, String nome, Character genero, 
                         LocalDate nascimento, Partido partido, Integer numero, 
-                        Integer numero_federacao, Integer votos, Boolean nominal, 
+                        Integer numero_federacao, Integer votos, Integer nominal, 
                         Boolean eleito){
                 this.cargo = cargo;
                 this.nome = nome;
@@ -37,7 +40,7 @@ public class Candidato implements Comparable<Candidato>{
         @Override
         public String toString(){
                 String s = NumberFormat.getIntegerInstance(lBR).format(votos);
-                return nome.toUpperCase() + " " + "(" + getPartido().getSigla().toUpperCase() + ", " + s + " votos)"; 
+                return nome.toUpperCase() + " " + "(" + getPartido().getSigla() + ", " + s + " voto" + (votos > 1?"s":"") + ")"; 
         }
 
         //Ordenados por voto nominal
@@ -97,14 +100,30 @@ public class Candidato implements Comparable<Candidato>{
         }
         public String getCandNumVoto(){
                 String s = NumberFormat.getIntegerInstance(lBR).format(votos);
-                return nome.toUpperCase() + " (" + numero.toString() + ", " + s + " votos)";
+                return nome.toUpperCase() + " (" + numero.toString() + ", " + s + " voto"+ (votos>1?"s":"") + ")";
         }
 
-        public Boolean getFlagNominal(){
+        public Integer getFlagNominal(){
                 return this.flagNominal;
         }
 
         public Boolean eleito(){
                 return this.eleito;
+        }
+
+
+        public String dbg(){
+                String ans = "";
+                ans += cargo + " ";
+                ans += nome + " ";
+                //ans += genero + " ";
+                //ans += nascimento + " ";
+                ans += partido.getSigla() + " ";
+                ans += numero + " ";
+                //ans += numero_federacao + " ";
+                ans += flagNominal + " ";
+                ans += votos + " ";
+                ans += eleito + " ";
+                return ans;
         }
 }
