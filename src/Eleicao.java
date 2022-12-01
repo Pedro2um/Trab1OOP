@@ -156,6 +156,7 @@ public class Eleicao {
         }
 
         private int cmpIdade(LocalDate r, LocalDate a, LocalDate b){
+                //usar compareTo
                 int ia = getIdade(r, a);
                 int ib = getIdade(r, b);
                 if(ia > ib) {
