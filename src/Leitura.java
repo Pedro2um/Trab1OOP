@@ -22,7 +22,7 @@ public class Leitura {
 
         //Colunas do arquivo de "candidato.csv"
         static final private int CD_CARGO_CAND = 13; //14 - 1
-        static final private int CD_SITUACAO_CANDIDADO_TOT = 24; //25 - 1
+        static final private int CD_SITUACAO_CANDIDADO_TOT = 68; //69 - 1
         static final private int NR_CANDIDATO = 16; // 17 - 1
         static final private int NM_URNA_CANDIDATO = 18; //19 - 1
         static final private int NR_PARTIDO = 27; //28 - 1
@@ -223,6 +223,7 @@ public class Leitura {
         }
         private void pCandidatoDeferido(Map<Integer, Partido> part, Map<Integer,Candidato> cand, Integer num, Integer votos){
                 int f = cand.get(num).getFlagNominal();
+                //trocar para boolean
                 if(  f == Candidato.VALIDO) {
                         cand.get(num).incVotos(votos);
                         cand.get(num).getPartido().incVotosNominais(votos);
