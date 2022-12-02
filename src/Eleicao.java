@@ -49,6 +49,16 @@ public class Eleicao {
                 localDate = LocalDate.parse(data,formatter);
         } 
 
+        /**
+         * Faz a leitura da entrada a partir de um arquivo com a codificacao especificada
+         * @param enconding
+         * @param part
+         * @param cand
+         * @param tipo Tipo de relatorio a ser gerado
+         * @param fcand Caminho completo do arquivo de candidatos
+         * @param fvotos Caminho completo do arquivo de votacao
+         * @param data
+         */
         public void readInput( String enconding, Map<Integer, Partido> part, Map<Integer,Candidato> cand,  String tipo, String fcand, String fvotos, String data){
                 
                 Leitura l = new Leitura();
@@ -62,6 +72,13 @@ public class Eleicao {
                 l.readVotos(f, part, partRanking,cand, fvotos,enconding);
         }
 
+        /**
+         * Escreve todos os relatorios exigidos pela especificacao.
+         * WARNING: tem como pre-condicao o processamento dos dados.
+         * @param part
+         * @param tipo
+         * @param data
+         */
         public void writeOutput(Map<Integer,Partido> part, String tipo, String data){
                 relatorio1();
                 relatorio2(tipo);
@@ -75,6 +92,13 @@ public class Eleicao {
                 relatorio11();
         }
 
+        /**
+         * Processa os dados.
+         * Tem como pre-condicao a leitura dos dados.
+         * @param part
+         * @param cand
+         * @param data
+         */
         public void solve(Map<Integer, Partido> part, Map<Integer,Candidato> cand, String data){
 
                 solve1();
@@ -86,24 +110,37 @@ public class Eleicao {
                 solve4(candMaisVotadosTemp, candEleitosTemp);
                 solve5();
                 solve6();
-                solve8and11(part, data);
+                solve8and11(part);
                 solve9and10(data);
         }
+
+        //Enumerados de maneira correspondente aos relatorios
 
         private void solve1(){
                 return;
         }
-        private void solve2(){
+        /**
+         * Necessario para o relatorio2
+         */
+        public void solve2(){
                 candEleitos.sort((Candidato a, Candidato b)->  (        -1*Integer.valueOf(a.getVotos()).compareTo(b.getVotos())==0?
                                                                          cmpIdade(a.getNascimento(), b.getNascimento()): 
                                                                         -1*Integer.valueOf(a.getVotos()).compareTo(b.getVotos())) 
                 );
         }
-        private void solve3(Map<Integer,Candidato> cand){
+        /**
+         * Necessario para o relatorio3
+         */
+        public void solve3(Map<Integer,Candidato> cand){
                 candMaisVotados.addAll(cand.values());
                 candMaisVotados.sort((Candidato a, Candidato b)->  -1*Integer.valueOf(a.getVotos()).compareTo(b.getVotos()));
         }
-        private void solve4(Set<Candidato> candMaisVotadosTemp, Set<Candidato> candEleitosTemp){
+        /**
+         * Necessario para o relatorio4
+         * @param candMaisVotadosTemp
+         * @param candEleitosTemp
+         */
+        public void solve4(Set<Candidato> candMaisVotadosTemp, Set<Candidato> candEleitosTemp){
                 int cnt = 1; 
                 //ranking de mais votados
                 for(var x: candMaisVotados){
@@ -124,7 +161,10 @@ public class Eleicao {
                 }
 
         }
-        private void solve5(){
+        /**
+         * Necessario para o relatorio5
+         */
+        public void solve5(){
                  //relatorio 5
                 for(var x: candEleitos){
                         if(m.get(x.getNumero()) > candEleitos.size()){
@@ -132,7 +172,10 @@ public class Eleicao {
                         }
                 }
         }
-        private void solve6(){
+        /**
+         * Necessario para o relatorio6
+         */
+        public void solve6(){
                 partRanking.sort((Partido a, Partido b)->       -1*Integer.valueOf(a.getVotosTotal()).compareTo(b.getVotosTotal()) == 0?
                                                                    Integer.valueOf(a.getNumPartido()).compareTo(b.getNumPartido()):
                                                                 -1*Integer.valueOf(a.getVotosTotal()).compareTo(b.getVotosTotal())
@@ -141,26 +184,131 @@ public class Eleicao {
         private void solve7(){
                 return;
         }
-        private void solve8(){
-                return;
+        /**
+         * Necessario para o relatorio8
+         * @param part
+         */
+        public void solve8(Map<Integer, Partido> part){
+                for(var x: part.entrySet()){
+                        votosValidosTotal += x.getValue().getVotosTotal();
+                        votosNominaisTotal += x.getValue().getVotosNominal();
+                        votosLegendaTotal += x.getValue().getVotosLegenda();
+                }
         }
-        
-        private void solve9(){
-                return;
+        /**
+         * Necessario para o relatorio9
+         * @param data
+         */
+        public void solve9(String data){
+                 //relatorio 9
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
+                LocalDate ld = LocalDate.parse(data, formatter);
+
+                for(int i = 0; i < SIZE; i++){
+                        qtd[i] = 0;
+                }
+               
+
+                for(var x: candEleitos){
+                        long i = getIdade(ld, x.getNascimento());
+                        if( i < 30){
+                                qtd[B30]++;
+                        }
+                        else if( i < 40){
+                                qtd[B40]++;
+                        }
+                        else if( i < 50){
+                                qtd[B50]++;
+                        }
+                        else if( i < 60){
+                                qtd[B60]++;
+                        }
+                        else {
+                                qtd[U60]++;
+                        }
+                        
+                } 
+                qtdTotal = candEleitos.size();
         }
-        private void solve10(){
-                return;
+        /**
+         * Necessario para o relatorio10
+         */
+        public void solve10(){
+                for(int i = 0; i < SIZE_GEN; i++){
+                        gen[i] = 0;
+                }
+
+                for(var x: candEleitos){
+                       
+                        if(x.getGenero().compareTo(Leitura.MAS) == 0){
+                                gen[MAS]++;
+                        }
+                        else if(x.getGenero().compareTo(Leitura.FEM) == 0){
+                                gen[FEM]++;    
+                        }
+                } 
+                qtdTotal = candEleitos.size();
         }
-        private void solve11(){
-                return;
+        /**
+         * Necessario para o relatorio11
+         * @param part
+         */
+        public void solve11(Map<Integer, Partido> part){
+                // LocalDate d = LocalDate.
+                for(var x: part.entrySet()){
+                        //apenas partido com algum candidato
+                        if(x.getValue().getQtdCandidatos() > 0) {
+                                ArrayList<Candidato> temp = x.getValue().getArrayListCandidatos();
+                                temp.sort((Candidato a, Candidato b) ->         -1*Integer.valueOf(a.getVotos()).compareTo(b.getVotos())==0?
+                                                                                   cmpIdade(a.getNascimento(), b.getNascimento()): 
+                                                                                -1*Integer.valueOf(a.getVotos()).compareTo(b.getVotos()));
+
+                                ArrayList<Candidato> temp2 = new ArrayList<>();
+                                temp2.add(temp.get(0));//max
+                                temp2.add(temp.get(temp.size()-1));//min 
+                                partCHL.put(x.getValue(), temp2);
+                                
+                        }
+                       
+                }
+
+                partCandHiLow = new TreeMap<Partido, ArrayList<Candidato>>(
+                        new Comparator<Partido>() {
+                                @Override
+                                public int compare(Partido a, Partido b){
+                                        long x = partCHL.get(a).get(0).getVotos();
+                                        long y = partCHL.get(b).get(0).getVotos();
+                                        if( x < y ){
+                                                return 1;
+                                        }
+                                        else if( x > y){
+                                                return -1;
+                                        }
+                                        else {
+                                                if( a.getNumPartido() < b.getNumPartido() ) {
+                                                        return 1;
+                                                }
+                                                else if( a.getNumPartido() > b.getNumPartido()){
+                                                        return -1;
+                                                }
+                                                else {
+                                                        return 0;
+                                                }
+                                                
+                                        }
+                                }
+                        }
+                );
+
+                partCandHiLow.putAll(partCHL);  
         }
 
         private int cmpIdade(LocalDate a, LocalDate b){
                 return a.compareTo(b);
         }
 
-        //otimizacoes
-        private void solve8and11(Map<Integer, Partido> part, String data){    
+        //Otimizacoes
+        public void solve8and11(Map<Integer, Partido> part){    
                // LocalDate d = LocalDate.
                 for(var x: part.entrySet()){
                         //apenas partido com algum candidato
@@ -211,7 +359,7 @@ public class Eleicao {
 
                 partCandHiLow.putAll(partCHL);  
         } 
-        private void solve9and10(String data){
+        public void solve9and10(String data){
                  //relatorio 9 e 10
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
                 LocalDate ld = LocalDate.parse(data, formatter);
@@ -241,23 +389,27 @@ public class Eleicao {
                                 qtd[U60]++;
                         }
                         
-                        if(x.getGenero().compareTo('M') == 0){
+                        if(x.getGenero().compareTo(Leitura.MAS) == 0){
                                 gen[MAS]++;
                         }
-                        else if(x.getGenero().compareTo('F') == 0){
+                        else if(x.getGenero().compareTo(Leitura.FEM) == 0){
                                 gen[FEM]++;    
                         }
                 } 
                 qtdTotal = candEleitos.size();
         }
         
-        
-        //Exibir Relatorios
-        
-        private void relatorio1(){
+        /**
+         * Pre-requisito: calculo de candidatos eleitos.
+         */
+        public void relatorio1(){
                 System.out.println("Número de vagas: " + candEleitos.size() + "\n");
         } 
-        private void relatorio2(String tipo){
+        /**
+         * Pre-requisito: calculo de candidatos eleitos.
+         * @param tipo
+         */
+        public void relatorio2(String tipo){
                 String dep = (tipo.compareTo(Federal))==0?"federais":"estaduais";
                 System.out.println("Deputados " + dep + " eleitos:");
                 Integer cnt = 1;
@@ -266,7 +418,10 @@ public class Eleicao {
                         cnt = cnt + 1;
                 }
         }
-        private void relatorio3(){
+        /**
+         *  Pre-requisito: calculo de candidatos mais votados
+         */
+        public void relatorio3(){
                 //relatorio 3
                 System.out.println("\nCandidatos mais votados (em ordem decrescente de votação e respeitando número de vagas):");
                 int cnt = 1;
@@ -277,20 +432,29 @@ public class Eleicao {
                         if(cnt > candEleitos.size()) break;
                 }
         }
-        private void relatorio4(){
+        /**
+         * Pre-requisito: calculo de candidatos eleitos e calculo de candidatos mais votados
+         */
+        public void relatorio4(){
                 System.out.println("\nTeriam sido eleitos se a votação fosse majoritária, e não foram eleitos:\n(com sua posição no ranking de mais votados)");
                 for(var x: candSeriamEleitos){ 
                         if( m.get(x.getNumero()) > candEleitos.size()) break;
                         System.out.println( m.get(x.getNumero()) + " - " +  (x.getNumeroFederacao() != -1? "*":"") + x);     
                 }
         }
-        private void relatorio5(){
+        /**
+         *  Pre-requisito: calculo de candidatos eleitos e calculo de candidatos mais votados
+         */
+        public void relatorio5(){
                 System.out.println("\nEleitos, que se beneficiaram do sistema proporcional:\n(com sua posição no ranking de mais votados)");
                 for(var x: candBeneficiados){  
                         System.out.println( m.get(x.getNumero()) + " - " +  (x.getNumeroFederacao() != -1? "*":"") + x); 
                 }
         }
-        private void relatorio6(){
+        /**
+         * Pre-requsito: calculo de candidatos eleitos
+         */
+        public void relatorio6(){
                 int cnt = 1;
                 //relatorio 6
                 System.out.println("\nVotação dos partidos e número de candidatos eleitos:");
@@ -302,7 +466,10 @@ public class Eleicao {
         private void relatorio7(){
                 return;
         }
-        private void relatorio8(){
+        /**
+         * Pre-requisito: nenhum
+         */
+        public void relatorio8(){
                 System.out.println("\nPrimeiro e último colocados de cada partido:"); 
                 int cnt = 1;
                 for(var x: partCandHiLow.entrySet()){
@@ -312,7 +479,10 @@ public class Eleicao {
                         cnt++;
                 }
         }
-        private void relatorio9(){
+        /**
+         * Pre-requsito: calculo de candidatos eleitos
+         */
+        public void relatorio9(){
 
                 NumberFormat aFormat = NumberFormat.getInstance(locale);
                 NumberFormat bFormat = NumberFormat.getInstance(locale);
@@ -328,7 +498,10 @@ public class Eleicao {
                 System.out.println("50 <= Idade < 60: " + qtd[B60] + " (" + aFormat.format(proporcao(qtd[B60], qtdTotal)) + "%)");
                 System.out.println("60 <= Idade     : " + qtd[U60] + " (" + aFormat.format(proporcao(qtd[U60], qtdTotal)) + "%)");
         }
-        private void relatorio10(){
+        /**
+         * Pre-requsito: calculo de candidatos eleitos
+         */
+        public void relatorio10(){
 
                 NumberFormat aFormat = NumberFormat.getInstance(locale);
                 NumberFormat bFormat = NumberFormat.getInstance(locale);
@@ -337,10 +510,13 @@ public class Eleicao {
                 aFormat.setMinimumFractionDigits(2);
 
                 System.out.println("\nEleitos, por gênero:");
-                System.out.println("Feminino:  " + gen[FEM] + " (" + aFormat.format(proporcao(gen[FEM], qtdTotal)) + "%)");
-                System.out.println("Masculino: " + gen[MAS] + " (" + aFormat.format(proporcao(gen[MAS], qtdTotal)) + "%)");
+                System.out.println("Feminino:  " + gen[FEM] + " (" + aFormat.format(proporcaoDouble(gen[FEM], qtdTotal)) + "%)");
+                System.out.println("Masculino: " + gen[MAS] + " (" + aFormat.format(proporcaoDouble(gen[MAS], qtdTotal)) + "%)");
         }
-        private void relatorio11(){
+        /**
+         * Pre-requsito: nenhum
+         */
+        public void relatorio11(){
                  //relatorio 11
                 NumberFormat aFormat = NumberFormat.getInstance(locale);
                 NumberFormat bFormat = NumberFormat.getInstance(locale);
@@ -358,7 +534,7 @@ public class Eleicao {
                                         + aFormat.format( proporcaoDouble(votosLegendaTotal, votosValidosTotal) ) + "%)\n");
         }
         
-        //funcoes auxiliares
+        //Poderia ser um metodo de Candidato
         private static int getIdade(LocalDate ld, LocalDate n) {
                 return Period.between(n, ld).getYears();  
         }

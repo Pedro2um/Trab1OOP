@@ -10,39 +10,53 @@ import java.util.List;
 import java.util.Map;
 
 public class Leitura {
-
         //Constantes  relevantes para o trab
-        static final int FEDERAL = 6; // F in implementation
-        static final int ESTADUAL = 7; // E in implementation
-        static final int[] DEFERIDO = {2, 16};
-        static final int ISOLADO = -1;
-        static final int[] ELEITO = {2, 3};
-        static final String MASCULINO = "2", FEMININO = "4"; // M and F in implementation
+        static final int                FEDERAL                         = 6,
+                                        ESTADUAL                        = 7,
+                                        ISOLADO                         = -1;
+
+        static final int[]              DEFERIDO                        = {2, 16},
+                                        ELEITO                          = {2, 3};   
+
+        static final String             MASCULINO                       = "2", 
+                                        FEMININO                        = "4",
+                                        FORMATO_DATA                    = "d/MM/yyyy",
+                                        SEPARADOR_CSV_CD                = ";", 
+                                        SEPARADOR_CSV_VOT               = ";",
+                                        VALIDO_LEGENDA                  = "Válido (legenda)";
+
+        static final char               FED                             = 'F', 
+                                        EST                             = 'E', 
+                                        MAS                             = 'M', 
+                                        FEM                             = 'F';
+                                       
 
 
-        //Colunas do arquivo de "candidato.csv"
-        static final private int CD_CARGO_CAND = 13; //14 - 1
-        static final private int CD_SITUACAO_CANDIDADO_TOT = 68; //69 - 1
-        static final private int NR_CANDIDATO = 16; // 17 - 1
-        static final private int NM_URNA_CANDIDATO = 18; //19 - 1
-        static final private int NR_PARTIDO = 27; //28 - 1
-        static final private int SG_PARTIDO = 28; //29 - 1
-        static final private int NR_FEDERACAO = 30; //31 - 1
-        static final private int DT_NASCIMENTO = 42; //43 - 1
-        static final private int CD_SIT_TOT_TURNO = 56; //57 - 1
-        static final private int CD_GENERO = 45; //46 - 1
-        static final private int NM_TIPO_DESTINACAO_VOTOS = 67;//68 - 1
+        //Colunas do arquivo de "candidato.csv" 
+        // Valor da coluna do arquivo csv - 1
+        static final private int        CD_CARGO_CAND                   = 13,
+                                        CD_SITUACAO_CANDIDADO_TOT       = 68,
+                                        NR_CANDIDATO                    = 16,
+                                        NM_URNA_CANDIDATO               = 18,
+                                        NR_PARTIDO                      = 27,
+                                        SG_PARTIDO                      = 28,
+                                        NR_FEDERACAO                    = 30,
+                                        DT_NASCIMENTO                   = 42,
+                                        CD_SIT_TOT_TURNO                = 56,
+                                        CD_GENERO                       = 45,
+                                        NM_TIPO_DESTINACAO_VOTOS        = 67;
 
         //Colunas do arquivo de "votos.csv"
-        static final private int CD_CARGO_VOT = 17; //18 - 1
-        static final int[] IGNORAR_NR_VOTAVEL = {95,96,97,98}; //Colunas irrelevantes
-        static final int   NR_VOTAVEL   = 19; // 20 - 1
-        static final int QT_VOTOS = 21; // 22 - 1
-        static final int NM_VOTAVEL = 20; // 21 - 1
-        private Map<Integer,Candidato> extra = new HashMap<>();//candidatos (do cargo de opcao) não deferidos e que os votos sao direcionados para legenda do partido
+        // Valor da coluna do arquivo csv - 1
+        static final private int        CD_CARGO_VOT                    = 17;
+        static final int[]              IGNORAR_NR_VOTAVEL              = {95,96,97,98}; //Colunas irrelevantes
+        static final int                NR_VOTAVEL                      = 19,
+                                        QT_VOTOS                        = 21,
+                                        NM_VOTAVEL                      = 20;
+        private                         Map<Integer,Candidato> extra    = new HashMap<>();//candidatos (do cargo de opcao) não deferidos e que os votos sao direcionados para legenda do partido
         
-        static boolean NOMINAL = true;
-        static boolean LEGENDA = false;
+        static boolean                  NOMINAL                         = true,
+                                        LEGENDA                         = false;
 
         private boolean ignorarNrVotavel(Integer x){
                 for(int i = 0; i < 3; i++){
@@ -72,12 +86,12 @@ public class Leitura {
                         line = inputc.readLine();
                         String rep = "\"";
                         String rrep = "";
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMATO_DATA);
 
                         while((line = inputc.readLine()) != null){
                                 line = line.replace(rep,rrep); 
                                 
-                                String[] row = line.split(";");
+                                String[] row = line.split(SEPARADOR_CSV_CD);
 
                                 Integer situacao = Integer.parseInt(row[CD_SITUACAO_CANDIDADO_TOT]);
 
@@ -104,11 +118,10 @@ public class Leitura {
                                 else if( cd == ESTADUAL && federal == true){
                                         continue;
                                 }
-                                Character cargo = (cd == FEDERAL?'F':'E');
+                                Character cargo = (cd == FEDERAL?FED:EST);
                                
                                 if(deferido(situacao)==false ){
-                                        String vv = "Válido (legenda)";
-                                        if(row[NM_TIPO_DESTINACAO_VOTOS].compareTo(vv) == 0 ){
+                                        if(row[NM_TIPO_DESTINACAO_VOTOS].compareTo(VALIDO_LEGENDA) == 0 ){
                                                 Candidato curr = cCandidato(row, cargo, partido, formatter);
                                                 extra.put(curr.getNumero(), curr);
                                         }
@@ -139,15 +152,15 @@ public class Leitura {
 
         private Candidato cCandidato(String[] row, Character cargo, Partido partido, DateTimeFormatter formatter){ 
                 String nome = row[NM_URNA_CANDIDATO].trim();
-                Character genero = (row[CD_GENERO].compareTo(MASCULINO) == 0 ? 'M':'F');
+                Character genero = (row[CD_GENERO].compareTo(MASCULINO) == 0 ? MAS:FEM);
                 LocalDate nascimento = LocalDate.parse(row[DT_NASCIMENTO], formatter);
                 Integer numero = Integer.parseInt(row[NR_CANDIDATO]);;
                 Integer numero_federacao = Integer.parseInt(row[NR_FEDERACAO]);
                 Integer votos = 0;
                 //verifica o direcionamento de votos
-                String vl = "Válido (legenda)";
+                //String vl = ;
                 boolean nominal;
-                if(row[NM_TIPO_DESTINACAO_VOTOS].compareTo(vl) == 0) nominal = LEGENDA;
+                if(row[NM_TIPO_DESTINACAO_VOTOS].compareTo(VALIDO_LEGENDA) == 0) nominal = LEGENDA;
                 else nominal = NOMINAL;
 
                 Boolean eleito = (      (Integer.parseInt(row[CD_SIT_TOT_TURNO]) == ELEITO[0] || Integer.parseInt(row[CD_SIT_TOT_TURNO]) == ELEITO[1]) ? true: false);
@@ -168,7 +181,7 @@ public class Leitura {
                         line = inputv.readLine();
                         while( (line = inputv.readLine()) != null){
                                 line = line.replace(rep,rrep); 
-                                String[] row = line.split(";");
+                                String[] row = line.split(SEPARADOR_CSV_VOT);
                                 
                                 Integer num = Integer.parseInt(row[NR_VOTAVEL]);
 
@@ -189,7 +202,7 @@ public class Leitura {
         
                                 Integer votos = Integer.parseInt(row[QT_VOTOS]);
 
-                                p(part, cand, num, votos);
+                                pAll(part, cand, num, votos);
   
                         } 
                 }
@@ -203,7 +216,7 @@ public class Leitura {
         }
 
 
-        private void p(Map<Integer, Partido> part, Map<Integer,Candidato> cand, Integer num, Integer votos){ 
+        private void pAll(Map<Integer, Partido> part, Map<Integer,Candidato> cand, Integer num, Integer votos){ 
                 //candidatos não deferidos com direcionamento de votos para legenda 
                 if(extra.containsKey(num) == true){
                         pCandidatoIndeferido(part,num,votos);

@@ -5,17 +5,17 @@ import java.util.Locale;
 
 public class Candidato implements Comparable<Candidato>{
         
-        private String          nome="";                           //Nome verdadeiro
-        private Character       genero='N';
-        private Character       cargo='N'; //F para federal e E para estadual
-        private LocalDate       nascimento;  
-        private Partido         partido;
-        private Integer         numero = -1;
-        private Integer         numero_federacao = -1;
-        private Integer         votos = 0;
-        private Boolean         eleito = false; 
-        private boolean         flagNominal = true; //se falso , então votos direcionados para o partido
-        static private final Locale lBR = new Locale("pt", "BR");
+        private                 String          nome                    ="";                           //Nome verdadeiro
+        private                 Character       genero                  ='N';
+        private                 Character       cargo                   ='N'; //F para federal e E para estadual
+        private                 LocalDate       nascimento;  
+        private                 Partido         partido;
+        private                 Integer         numero                  = -1;
+        private                 Integer         numero_federacao        = -1;
+        private                 Integer         votos                   = 0;
+        private                 Boolean         eleito                  = false; 
+        private                 boolean         flagNominal             = true; //se falso , então votos direcionados para o partido
+        static private final    Locale          lBR                     = new Locale("pt", "BR");
 
         public Candidato(Character cargo, String nome, Character genero, 
                         LocalDate nascimento, Partido partido, Integer numero, 
@@ -33,7 +33,7 @@ public class Candidato implements Comparable<Candidato>{
                 this.eleito = eleito;
         }
 
-        //temporário, precisa colocar ponto nos números
+        
         @Override
         public String toString(){
                 String s = NumberFormat.getIntegerInstance(lBR).format(votos);
@@ -64,9 +64,7 @@ public class Candidato implements Comparable<Candidato>{
                 return this.nome;
         }
 
-        /*
-          M -> MASCULINO e F -> FEMININO
-        */
+       
         public Character getGenero(){
                 return this.genero;
         }

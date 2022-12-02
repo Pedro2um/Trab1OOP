@@ -7,15 +7,14 @@ import java.util.Set;
 
 
 public class Partido implements Comparable<Partido>{
-        private Integer votosLegenda = 0;
-        private Integer votosNominal = 0;
-        private String sigla = "NENHUMA";
-        private Integer num = -1;
-        private Set<Candidato> c = new HashSet<Candidato>();
-        private Integer qtdCandidatos = 0;
-        //private List<Candidato> c = new ArrayList<Candidato>();
-        private Integer numCandidatosEleitos=0;
-        static private final Locale lBR = new Locale("pt", "BR");
+        private                 Integer         votosLegenda            = 0;
+        private                 Integer         votosNominal            = 0;
+        private                 String          sigla                   = "NENHUMA";
+        private                 Integer         num                     = -1;
+        private                 Set<Candidato>  c                       = new HashSet<Candidato>();
+        private                 Integer         qtdCandidatos           = 0;
+        private                 Integer         numCandidatosEleitos    = 0;
+        static private final    Locale          lBR                     = new Locale("pt", "BR");
         //Public
         public Partido(String sigla, Integer num){
                 this.sigla = sigla;
@@ -28,20 +27,7 @@ public class Partido implements Comparable<Partido>{
         }
         public ArrayList<Candidato> getArrayListCandidatos(){
                 return new ArrayList<>(c);
-        }
-        //Ordenados por votos de legenda
-        /*@Override
-        public int compareTo(Partido b){
-                if(votosLegenda > b.getVotosLegenda()){
-                        return 1;
-                }
-                else if(votosLegenda < b.getVotosLegenda()){
-                        return -1;
-                }
-                else{
-                        return 0;
-                }
-        }*/
+        } 
 
         @Override
         public int compareTo(Partido b){
