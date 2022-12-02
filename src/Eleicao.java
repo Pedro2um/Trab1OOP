@@ -95,7 +95,7 @@ public class Eleicao {
         }
         private void solve2(){
                 candEleitos.sort((Candidato a, Candidato b)->  (        -1*Integer.valueOf(a.getVotos()).compareTo(b.getVotos())==0?
-                                                                        -1*cmpIdade(localDate, a.getNascimento(), b.getNascimento()): 
+                                                                         cmpIdade(a.getNascimento(), b.getNascimento()): 
                                                                         -1*Integer.valueOf(a.getVotos()).compareTo(b.getVotos())) 
                 );
         }
@@ -155,19 +155,8 @@ public class Eleicao {
                 return;
         }
 
-        private int cmpIdade(LocalDate r, LocalDate a, LocalDate b){
-                //usar compareTo
-                int ia = getIdade(r, a);
-                int ib = getIdade(r, b);
-                if(ia > ib) {
-                        return 1;
-                }
-                else if(ia < ib){
-                        return -1;
-                }
-                else{
-                        return 0;
-                }
+        private int cmpIdade(LocalDate a, LocalDate b){
+                return a.compareTo(b);
         }
 
         //otimizacoes
@@ -178,7 +167,7 @@ public class Eleicao {
                         if(x.getValue().getQtdCandidatos() > 0) {
                                 ArrayList<Candidato> temp = x.getValue().getArrayListCandidatos();
                                 temp.sort((Candidato a, Candidato b) ->         -1*Integer.valueOf(a.getVotos()).compareTo(b.getVotos())==0?
-                                                                                -1*cmpIdade(localDate, a.getNascimento(), b.getNascimento()): 
+                                                                                   cmpIdade(a.getNascimento(), b.getNascimento()): 
                                                                                 -1*Integer.valueOf(a.getVotos()).compareTo(b.getVotos()));
 
                                 ArrayList<Candidato> temp2 = new ArrayList<>();

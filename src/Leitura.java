@@ -41,6 +41,8 @@ public class Leitura {
         static final int NM_VOTAVEL = 20; // 21 - 1
         private Map<Integer,Candidato> extra = new HashMap<>();//candidatos (do cargo de opcao) não deferidos e que os votos sao direcionados para legenda do partido
         
+        static boolean NOMINAL = true;
+        static boolean LEGENDA = false;
 
         private boolean ignorarNrVotavel(Integer x){
                 for(int i = 0; i < 3; i++){
@@ -143,13 +145,11 @@ public class Leitura {
                 Integer numero_federacao = Integer.parseInt(row[NR_FEDERACAO]);
                 Integer votos = 0;
                 //verifica o direcionamento de votos
-                String vv = "Válido (legenda)";
-                String v = "Válido";
-                Integer nominal = Candidato.OUTRO;
-                if(row[NM_TIPO_DESTINACAO_VOTOS].compareTo(vv) == 0) nominal = Candidato.VALIDO_LEGENDA;
-                else if(row[NM_TIPO_DESTINACAO_VOTOS].compareTo(v) == 0) nominal = Candidato.VALIDO;
+                String vl = "Válido (legenda)";
+                boolean nominal;
+                if(row[NM_TIPO_DESTINACAO_VOTOS].compareTo(vl) == 0) nominal = LEGENDA;
+                else nominal = NOMINAL;
 
-               // nominal = (row[NM_TIPO_DESTINACAO_VOTOS].compareTo(v) == 0? true: false);//? não vai estar em extra
                 Boolean eleito = (      (Integer.parseInt(row[CD_SIT_TOT_TURNO]) == ELEITO[0] || Integer.parseInt(row[CD_SIT_TOT_TURNO]) == ELEITO[1]) ? true: false);
 
                 return new Candidato(cargo, nome, genero, nascimento, partido, numero, numero_federacao, votos, nominal, eleito);
@@ -222,14 +222,13 @@ public class Leitura {
                 extra.get(num).getPartido().incVotosLegenda(votos);
         }
         private void pCandidatoDeferido(Map<Integer, Partido> part, Map<Integer,Candidato> cand, Integer num, Integer votos){
-                int f = cand.get(num).getFlagNominal();
                 //trocar para boolean
-                if(  f == Candidato.VALIDO) {
+                if(  cand.get(num).getFlagNominal() == LEGENDA) {
+                        cand.get(num).getPartido().incVotosLegenda(votos);
+                }
+                else {
                         cand.get(num).incVotos(votos);
                         cand.get(num).getPartido().incVotosNominais(votos);
-                }
-                else if(f == Candidato.VALIDO_LEGENDA){
-                        cand.get(num).getPartido().incVotosLegenda(votos);
                 }
         }
         private void pPartido(Map<Integer, Partido> part, Integer num, Integer votos){

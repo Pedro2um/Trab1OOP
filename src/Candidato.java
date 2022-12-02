@@ -14,15 +14,12 @@ public class Candidato implements Comparable<Candidato>{
         private Integer         numero_federacao = -1;
         private Integer         votos = 0;
         private Boolean         eleito = false; 
-        static public int       VALIDO = 1;
-        static public int       VALIDO_LEGENDA = 2;
-        static public int       OUTRO = -1;
-        private Integer         flagNominal = -1; //se falso , então votos direcionados para o partido
+        private boolean         flagNominal = true; //se falso , então votos direcionados para o partido
         static private final Locale lBR = new Locale("pt", "BR");
 
         public Candidato(Character cargo, String nome, Character genero, 
                         LocalDate nascimento, Partido partido, Integer numero, 
-                        Integer numero_federacao, Integer votos, Integer nominal, 
+                        Integer numero_federacao, Integer votos, boolean nominal, 
                         Boolean eleito){
                 this.cargo = cargo;
                 this.nome = nome;
@@ -103,7 +100,7 @@ public class Candidato implements Comparable<Candidato>{
                 return nome.toUpperCase() + " (" + numero.toString() + ", " + s + " voto"+ (votos>1?"s":"") + ")";
         }
 
-        public Integer getFlagNominal(){
+        public boolean getFlagNominal(){
                 return this.flagNominal;
         }
 

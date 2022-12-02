@@ -27,13 +27,7 @@ public class Partido implements Comparable<Partido>{
                 return new HashSet<Candidato>(c);
         }
         public ArrayList<Candidato> getArrayListCandidatos(){
-                ArrayList<Candidato> n = new ArrayList<>();
-                for(var x: c){
-                        if(x.getFlagNominal() != Candidato.OUTRO){
-                                n.add(x);
-                        }
-                }
-                return n;
+                return new ArrayList<>(c);
         }
         //Ordenados por votos de legenda
         /*@Override
